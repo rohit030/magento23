@@ -1,0 +1,100 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+use Magento\Catalog\Model\Product\Option;
+use Rc\ProductOptions\Helper\Data;
+
+/**
+ * @var \Magento\Catalog\Block\Product\View\Options\View\Checkable $block
+ */
+$option = $block->getOption();
+$imageWidth  = Data::IMAGE_WIDTH;
+$imageHeight = Data::IMAGE_HEIGHT;
+$optionTitle = "ft";
+
+if ($option) : ?>
+    <?php
+        $configValue = $block->getPreconfiguredValue($option);
+        $optionType  = $option->getType();
+        $arraySign   = $optionType === Option::OPTION_TYPE_CHECKBOX ? '[]' : '';
+        $count = 1;
+
+        $key = "measurements";
+        $caseTitle = strtolower($option->getTitle());
+        if (strpos($caseTitle, $key) !== false) {
+            $customClass=null;
+        }else{
+            $customClass = "custom-price-radio";
+        }
+    ?>
+
+<div class="options-list nested" id="options-<?php echo /* @noEscape */
+$option->getId() ?>-list">
+
+    <?php $i=1; foreach ($option->getValues() as $value) : ?>
+        <?php
+
+        $checked = '';
+        $count++;
+        if ($arraySign) {
+            $checked = is_array($configValue) && in_array($value->getOptionTypeId(), $configValue) ? 'checked' : '';
+        } else {
+            $checked = $configValue == $value->getOptionTypeId() ? 'checked' : '';
+        }
+        $dataSelector = 'options[' . $option->getId() . ']';
+        if ($arraySign) {
+            $dataSelector .= '[' . $value->getOptionTypeId() . ']';
+        }
+        $checked = $optionTitle == strtolower($block->escapeHtml($value->getTitle())) ? 'checked' : '';
+        $ftClass  = $optionTitle == strtolower($block->escapeHtml($value->getTitle())) ? 'ft' : '';
+            
+        ?>
+
+        <div class="field choice admin__field admin__field-option <?php echo /* @noEscape */
+        $option->getIsRequire() ? 'required': '' ?>">
+        <?php 
+                    $mediaUrl = $this->getUrl('pub/media/rc_custom_options'); ?>
+                    <?php if($value->getImage()){?>
+                        <img width="<?=$imageWidth;?>" height="<?=$imageHeight;?>" src="<?= $mediaUrl.$value->getImage(); ?>" class="option-image" />
+                    <?php }?>
+            <input type="<?php echo /* @noEscape */
+            $optionType ?>"
+                   class="<?php /** @noinspection DisconnectedForeachInstructionInspection */
+                   echo /* @noEscape */
+                   $optionType === Option::OPTION_TYPE_RADIO ?
+                       'radio admin__control-radio' :
+                       'checkbox admin__control-checkbox' ?> <?php echo /* @noEscape */
+                        $option->getIsRequire() ? 'required': '' ?> product-custom-option <?=$customClass?> <?=$ftClass?>
+                        <?php echo $block->getSkipJsReloadPrice() ? '' : 'opConfig.reloadPrice()' ?>"
+                   name="options[<?php echo $option->getId() ?>]<?php echo /* @noEscape */
+                   $arraySign ?>" data-formula="<?=$option->getCustomClass()?>"
+                   id="options_<?php echo /* @noEscape */
+                       $option->getId() . '_' . $count ?>"
+                   value="<?php echo /* @noEscape */
+                   $value->getOptionTypeId() ?>" data-label="<?php echo strtolower($block->escapeHtml($value->getTitle())) ?>"
+                   data-sku="<?php echo strtolower($block->escapeHtml($value->getSku())) ?>"
+                <?php echo /* @noEscape */
+                $checked ?>
+                   data-selector="<?php echo /* @noEscape */
+                   $dataSelector ?>"
+                   price="<?php echo /* @noEscape */
+                   $block->getCurrencyByStore($value) ?>"
+            />
+            <label class="label admin__field-label"
+                   for="options_<?php echo /* @noEscape */
+                       $option->getId() . '_' . $count ?>">
+                <span>
+                    <?php echo $block->escapeHtml($value->getTitle()) ?>
+                </span>
+                <?php /* @noEscape */ 
+                $block->formatPrice($value) ?>
+            </label>
+        </div>
+    <?php $i++;endforeach; ?>
+    </div>
+<?php endif; ?>
+

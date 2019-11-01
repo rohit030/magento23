@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <update handle="checkout_item_price_renderers"/>
+    <head>
+        <css src="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" src_type="url"/>
+        <css src="Rc_ProductOptions::css/product_options.css"/>       
+    </head>
+    <body>
+        <referenceBlock name="product.info.addtocart">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Rc_ProductOptions::catalog/product/view/addtocart.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="product.info.addtocart.additional">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Rc_ProductOptions::catalog/product/view/addtocart.phtml</argument>
+            </action>
+        </referenceBlock>
+          <referenceBlock name="product.info.options.text">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Rc_ProductOptions::catalog/product/view/options/type/text.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="product.info.options.file">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Rc_ProductOptions::catalog/product/view/options/type/file.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="product.info.options.select">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Rc_ProductOptions::catalog/product/view/options/type/select.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="checkout.cart.item.renderers">
+            <block class="Magento\Checkout\Block\Cart\Item\Renderer" name="checkout.cart.item.renderers.default" as="default" template="Rc_DeleteItems::cart/item/default.phtml">
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="checkout.cart.item.renderers.default.actions" as="actions">
+                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.default.actions.edit" template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.default.actions.remove" template="Rc_DeleteItems::cart/item/renderer/actions/remove.phtml"/>
+                </block>
+            </block>
+            <block class="Magento\Checkout\Block\Cart\Item\Renderer" name="checkout.cart.item.renderers.simple" as="simple" template="Rc_DeleteItems::cart/item/default.phtml">
+                <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions" name="checkout.cart.item.renderers.simple.actions" as="actions">
+                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit" name="checkout.cart.item.renderers.simple.actions.edit" template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove" name="checkout.cart.item.renderers.simple.actions.remove" template="Rc_DeleteItems::cart/item/renderer/actions/remove.phtml"/>
+                </block>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

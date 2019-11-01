@@ -1,0 +1,77 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+
+<?php /* @var $block \Magento\Catalog\Block\Product\View\Options\Type\Select */ ?>
+<?php
+$_option = $block->getOption();
+$class = ($_option->getIsRequire()) ? ' required' : '';
+$key = "measurements";
+$caseTitle = strtolower($_option->getTitle());
+	if (strpos($caseTitle, $key) !== false) {
+		$customId = "custom-mesure";
+	}else{
+		$customId=null;
+	}
+
+	$dependancy = $_option->getDependsId();
+	$dependentclass = strtolower(str_replace(' ','-',$dependancy));
+	$desc=$_option->getDescription();
+?>
+<div class="<?php if($dependancy): echo $dependentclass; endif; ?> field<?= /* @escapeNotVerified */ $class ?>">
+    <label class="label" for="select_<?= /* @escapeNotVerified */ $_option->getId() ?>">
+        <span><?= $block->escapeHtml($_option->getTitle()) ?></span>
+		<?php if($desc):?>
+            <i class="fa fa-info-circle tooltip" aria-hidden="true">
+                <span class="tooltiptext"><?=$desc?></span>
+            </i>
+        <?php endif;?>
+    </label>
+    <div class="control" id="<?=$customId;?>">
+        <?= $block->getValuesHtml() ?>
+        <?php if ($_option->getIsRequire()): ?>
+            <?php if ($_option->getType() == \Magento\Catalog\Api\Data\ProductCustomOptionInterface::OPTION_TYPE_RADIO || $_option->getType() == \Magento\Catalog\Api\Data\ProductCustomOptionInterface::OPTION_TYPE_CHECKBOX): ?>
+                <span id="options-<?= /* @escapeNotVerified */ $_option->getId() ?>-container"></span>
+            <?php endif; ?>
+        <?php endif;?>
+    </div>
+</div>
+
+<script>
+  require([
+		  'jquery',
+		  'domReady!'
+	  ], function ($) {
+		  $(document).ready(function () {
+		  		$('select.product-custom-option').change(function(){
+					var selectedOption1 = $.trim($('option:selected', this).text());
+					var dependancy 		= $.trim("<?=$dependancy;?>");
+					var dependentclass 	= $.trim("<?=$dependentclass;?>");
+						if(dependancy && selectedOption1==dependancy){
+							//console.log(dependancy+"insideif"+selectedOption1);
+							$(".<?=$dependentclass;?>").show();
+						}else{
+							if(dependancy){
+								$(".<?=$dependentclass;?>").hide();
+							}							
+						}
+					$('option').each(function(){
+						var selectedOption = $(this).text();
+						if (selectedOption.indexOf('+') > -1) {
+							selectedOption = selectedOption.substring(0, selectedOption.indexOf('+'));
+							$(this).text(selectedOption);
+						} /*else if (selectedOption.indexOf('-') > -1) {
+							selectedOption = selectedOption.substring(0, selectedOption.indexOf('-'));
+							$(this).text(selectedOption);
+						}*/
+					});     
+			  });     
+		  });
+	   });
+</script>

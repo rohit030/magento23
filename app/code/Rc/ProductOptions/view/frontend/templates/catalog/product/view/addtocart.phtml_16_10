@@ -1,0 +1,1142 @@
+<?php
+/**
+	 * Create Product Custom Options
+	 *
+	 * @category    Rohit Chauhan
+	 * @package     Rc_ProductOptions
+	 * @author      rohit.chauhan030@gmail.com
+	 *
+     */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magento\Catalog\Block\Product\View */
+?>
+<?php $_product = $block->getProduct(); ?>
+<?php $buttonTitle = __('Add to Cart'); ?>
+
+<?php if ($_product->isSaleable()): ?>
+<div class="box-tocart">
+<div class="options-calculated-price"><span class="price"></span></div>
+    <div class="fieldset">
+        <?php if ($block->shouldRenderQuantity()): ?>
+        <div class="field qty">
+            <label class="label" for="qty"><span><?= /* @escapeNotVerified */ __('Qty') ?></span></label>
+            <div class="control">
+                <input type="number"
+                       name="qty"
+                       id="qty"
+                       min="0"
+                       value="<?= /* @escapeNotVerified */ $block->getProductDefaultQty() * 1 ?>"
+                       title="<?= /* @escapeNotVerified */ __('Qty') ?>"
+                       class="input-text qty"
+                       data-validate="<?= $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"
+                       />
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="actions">
+            <button type="submit"
+                    title="<?= /* @escapeNotVerified */ $buttonTitle ?>"
+                    class="action primary tocart"
+                    id="product-addtocart-button" disabled>
+                <span><?= /* @escapeNotVerified */ $buttonTitle ?></span>
+            </button>
+            <?= $block->getChildHtml('', true) ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<input type="hidden" value="ft" name="measure_type" id="measure_type">
+<input type="hidden" value="" name="measure_width" id="measure_width">
+<input type="hidden" value="" name="measure_height" id="measure_height">
+<input type="hidden" value="" name="measure_area" id="measure_area">
+<input type="hidden" value="" name="caculated_price" id="caculated_price">
+<input type="hidden" value="" name="identifier-a" id="identifier-a">
+<input type="hidden" value="" name="identifier-b" id="identifier-b">
+<input type="hidden" value="" name="identifier-c" id="identifier-c">
+<input type="hidden" value="" name="identifier-d" id="identifier-d">
+<input type="hidden" value="" name="identifier-e" id="identifier-e">
+<input type="hidden" value="" name="identifier-f" id="identifier-f">
+<input type="hidden" value="" name="identifier-g" id="identifier-g">
+<input type="hidden" value="" name="identifier-h" id="identifier-h">
+<input type="hidden" value="" name="identifier-i" id="identifier-i">
+<input type="hidden" value="" name="identifier-j" id="identifier-j">
+<input type="hidden" value="" name="identifier-k" id="identifier-k">
+<input type="hidden" value="" name="identifier-l" id="identifier-l">
+<input type="hidden" value="" name="identifier-m" id="identifier-m">
+<input type="hidden" value="" name="identifier-n" id="identifier-n">
+<input type="hidden" value="" name="identifier-o" id="identifier-o">
+<input type="hidden" value="" name="ro" id="ro">
+
+<script type="text/x-magento-init">
+    {
+        "#product_addtocart_form": {
+            "Magento_Catalog/js/validate-product": {}
+        }
+    }
+    
+</script>
+<?php $formula = $_product->getCustomFormula();
+if($formula):?>
+    <script type="text/javascript">
+       require(["jquery"],function($) {  
+        $(document).ready(function(){
+                   
+        /// Restricts input for each element in the set of matched elements to the given inputFilter.
+            (function($) {
+            $.fn.inputFilter = function(inputFilter) {
+                return this.on("input keydown keyup mousedown mouseup select contextmenu drop", function() {
+                if (inputFilter(this.value)) {
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                }
+                });
+            };
+            }(jQuery));
+  
+            var priceFormula = "<?=$formula;?>";
+            var PostUrl      = "<?=$this->getUrl('customoptions');?>";
+    
+            var dropdownOption = 0;
+            var printingOption = 0;
+            var price      = <?=$_product->getPrice()?>;
+
+            var inchWidth  = '<div class="extrawidth"><label class="label">Width</label><input class="extra-width-type" type="text" name="inch-width"><span>IN</span></div>';
+            var inchHeight = '<div class="extraheight"><label class="label">Height</label><input class="extra-height-type" type="text" name="inch-height"><span>IN</span></div>';
+             
+            
+    /*****************************************************************************************************************************************/
+    /***********************************Calculate price for customise measurement on calculate button onClick***************************************************************/
+    
+    
+                $('.calculate-custom-price').on('click',function() {  
+                    var optionPrice  = $(".mesure-height").attr('price');
+                    var dataFormula  = $(".mesure-height").attr('data-formula');
+                    var mesureWidth  = $(".mesure-width").val();
+                    var mesureHeight = $(".mesure-height").val();
+                    var mesureType   = $("#measure_type").val();
+    
+                    var extraWidth  = parseInt($(".extrawidth input").val());
+                    var extraHeight = parseInt($(".extraheight input").val());
+                    
+                    mesureWidth = $('#measure_width').val();
+                    mesureHeight = $('#measure_height').val();
+                    
+    
+                    /*if(extraWidth>0){
+                        mesureWidth = mesureWidth+'.'+extraWidth;
+                    }
+                    if(extraHeight>0){
+                        mesureHeight = mesureHeight+'.'+extraHeight;
+                    }*/
+    
+                    
+                    if(dataFormula=="A"){
+                            var A = 16;
+                        }else{
+                            var A = $('#identifier-a').val();
+                        }
+                        
+                    if(dataFormula=="B"){
+                            var B = optionPrice;
+                        }else{
+                            var B = $('#identifier-b').val();
+                        }
+                        if(dataFormula=="C"){
+                            var C = optionPrice;
+                        }else{
+                            var C  = $('#identifier-c').val();
+                        }
+    
+                        if(dataFormula=="D"){
+                            var D = optionPrice;
+                        }else{
+                            var D  = $('#identifier-d').val();
+                        }
+    
+                        if(dataFormula=="E"){
+                            var E = optionPrice;
+                        }else{
+                            var E  = $('#identifier-e').val();
+                        }
+    
+                        if(dataFormula=="F"){
+                            var F = optionPrice;
+                        }else{
+                            var F  = $('#identifier-f').val();
+                        }
+                        if(dataFormula=="G"){
+                            var G = optionPrice;
+                        }else{
+                            var G  = $('#identifier-g').val();
+                        }
+                        if(dataFormula=="H"){
+                            var H = optionPrice;
+                        }else{
+                            var H  = $('#identifier-h').val();
+                        }
+                        if(dataFormula=="I"){
+                            var I = optionPrice;
+                        }else{
+                            var I  = $('#identifier-i').val();
+                        }
+                        if(dataFormula=="J"){
+                            var J = optionPrice;
+                        }else{
+                            var J  = $('#identifier-j').val();
+                        }
+                        if(dataFormula=="K"){
+                            var K = optionPrice;
+                        }else{
+                            var K  = $('#identifier-k').val();
+                        }
+                        if(dataFormula=="L"){
+                            var L = optionPrice;
+                        }else{
+                            var L  = $('#identifier-l').val();
+                        }
+                        if(dataFormula=="M"){
+                            var M = optionPrice;
+                        }else{
+                            var M  = $('#identifier-m').val();
+                        }
+                        if(dataFormula=="N"){
+                            var N = optionPrice;
+                        }else{
+                            var N  = $('#identifier-n').val();
+                        }
+                        if(dataFormula=="O"){
+                            var O = optionPrice;
+                        }else{
+                            var O  = $('#identifier-o').val();
+                        }
+                        var rushStatus = $('#ro').val();
+                        if(rushStatus=="yes"){
+                            var rushStatus  =  "yes";
+                        }else if(rushStatus=="no"){
+                            var rushStatus  =  "no";
+                        }
+                    //console.log(A);
+                    if(A){
+                        $.ajax({
+                                url: PostUrl,
+                                type: 'POST',
+                                dataType: 'json',
+                                showLoader: true,
+                                data:{ rush : rushStatus,
+                                       productId : <?=$_product->getId()?>,
+                                       productPrice : <?=$_product->getPrice()?>,
+                                       optionPrice  : dataFormula+'_'+optionPrice,
+                                       formula      : priceFormula,
+                                       mesureType   : mesureType,
+                                       mesureWidth  : mesureWidth,
+                                       mesureHeight : mesureHeight,
+                                       selectedIdentifierA : A,
+                                       selectedIdentifierB : B,
+                                       selectedIdentifierC : C,
+                                       selectedIdentifierD : D,
+                                       selectedIdentifierE : E,
+                                       selectedIdentifierF : F,
+                                       selectedIdentifierG : G,
+                                       selectedIdentifierH : H,
+                                       selectedIdentifierI : I,
+                                       selectedIdentifierJ : J,
+                                       selectedIdentifierK : K,
+                                       selectedIdentifierL : L,
+                                       selectedIdentifierM : M,
+                                       selectedIdentifierN : N,
+                                       selectedIdentifierO : O,
+                                      },
+                                    complete: function(response) {  
+                                        result           = JSON.parse(JSON.stringify(response.responseJSON));
+                                        calculatedPrice  = result.finalPrice;
+                                        identifierV      = result.identifier;
+                                        console.log(identifierV);
+                                        if(identifierV=="A"){
+                                            $('#identifier-a').val(result.identifierA);
+                                        }
+                                        if(identifierV=="B"){
+                                            $('#identifier-b').val(result.identifierB);
+                                        }
+                                        if(identifierV=="C"){
+                                            $('#identifier-c').val(result.identifierC);
+                                        }
+                                        if(identifierV=="D"){
+                                            $('#identifier-d').val(result.identifierD);
+                                        }
+                                        if(identifierV=="E"){
+                                            $('#identifier-e').val(result.identifierE);
+                                        }
+                                        if(identifierV=="F"){
+                                            $('#identifier-f').val(result.identifierF);
+                                        }
+                                        if(identifierV=="G"){
+                                            $('#identifier-g').val(result.identifierG);
+                                        }
+                                        if(identifierV=="H"){
+                                            $('#identifier-h').val(result.identifierH);
+                                        }
+                                        if(identifierV=="I"){
+                                            $('#identifier-i').val(result.identifierI);
+                                        }
+                                        if(identifierV=="J"){
+                                            $('#identifier-j').val(result.identifierJ);
+                                        }
+                                        if(identifierV=="K"){
+                                            $('#identifier-k').val(result.identifierK);
+                                        }
+                                        if(identifierV=="L"){
+                                            $('#identifier-l').val(result.identifierL);
+                                        }
+                                        if(identifierV=="M"){
+                                            $('#identifier-m').val(result.identifierM);
+                                        }
+                                        if(identifierV=="N"){
+                                            $('#identifier-n').val(result.identifierN);
+                                        }
+                                        if(identifierV=="O"){
+                                            $('#identifier-o').val(result.identifierO);
+                                        }
+                                        $('.product-info-price .price-box').html(calculatedPrice);
+    
+                                        $('.options-calculated-price .price').html(calculatedPrice);
+    
+                                        $('#caculated_price').val(result.intPrice);
+    
+                                        console.log(result);
+                                    },
+                                    error: function (xhr, status, errorThrown) {
+                                        return;
+                                        console.log('Error->'+errorThrown);
+                                    }
+                                   
+                        }); 
+                    }
+                });
+    
+    
+    /**********************************************************************************************************************************/
+    /**********************calculate price for other Radio type options except measurement********************************************/
+    
+                $('.custom-price-radio').click(function() {  
+                    var optionPrice  = $(this).attr('price');
+                    var dataFormula  = $(this).attr('data-formula');
+                    var mesureWidth  = $("#measure_width").val();
+                    var mesureHeight = $('#measure_height').val();
+                    var mesureType   = $("#measure_type").val();   
+                    var rushStatus = $('#ro').val(); 
+
+                    if(dataFormula=="RO"){
+                        var rushStatus  =  $(this).attr('data-label');
+                        $('#ro').val(rushStatus);
+                    }
+                                    
+                    var installVenial =   $(this).attr('data-label'); 
+                    if(installVenial=='yes' && dataFormula!="RO"){
+                        $('.mesure-enter-your-address').parent().parent().show(); 
+                    }else if(installVenial=='no'){
+                        $('.mesure-enter-your-address').parent().parent().hide();
+                    }else{
+                        $('.mesure-enter-your-address').parent().parent().hide(); 
+                    }           
+                   
+                    if(dataFormula=="A"){
+                        var A = optionPrice;
+                    }else{
+                        var A = $('#identifier-a').val();
+                    }
+                    if(dataFormula=="B"){
+                        var B = optionPrice;
+                    }else{
+                        var B = $('#identifier-b').val();
+                    }
+                    if(dataFormula=="C"){
+                        var C = optionPrice;
+                    }else{
+                        var C  = $('#identifier-c').val();
+                    }
+    
+                    if(dataFormula=="D"){
+                        var D = optionPrice;
+                    }else{
+                        var D  = $('#identifier-d').val();
+                    }
+    
+                    if(dataFormula=="E"){
+                        var E = optionPrice;
+                    }else{
+                        var E  = $('#identifier-e').val();
+                    }
+    
+                    if(dataFormula=="F"){
+                        var F = optionPrice;
+                    }else{
+                        var F  = $('#identifier-f').val();
+                    }
+                    if(dataFormula=="G"){
+                        var G = optionPrice;
+                    }else{
+                        var G  = $('#identifier-g').val();
+                    }
+                    if(dataFormula=="H"){
+                        var H = optionPrice;
+                    }else{
+                        var H  = $('#identifier-h').val();
+                    }
+                    if(dataFormula=="I"){
+                        var I = optionPrice;
+                    }else{
+                        var I  = $('#identifier-i').val();
+                    }
+                    if(dataFormula=="J"){
+                        var J = optionPrice;
+                    }else{
+                        var J  = $('#identifier-j').val();
+                    }
+                    if(dataFormula=="K"){
+                        var K = optionPrice;
+                    }else{
+                        var K  = $('#identifier-k').val();
+                    }
+                    if(dataFormula=="L"){
+                        var L = optionPrice;
+                    }else{
+                        var L  = $('#identifier-l').val();
+                    }
+                    if(dataFormula=="M"){
+                        var M = optionPrice;
+                    }else{
+                        var M  = $('#identifier-m').val();
+                    }
+                    if(dataFormula=="N"){
+                        var N = optionPrice;
+                    }else{
+                        var N  = $('#identifier-n').val();
+                    }
+                    if(dataFormula=="O"){
+                        var O = optionPrice;
+                    }else{
+                        var O  = $('#identifier-o').val();
+                    }
+    
+                    if(optionPrice){
+                        $.ajax({
+                                url: PostUrl,
+                                type: 'POST',
+                                dataType: 'json',
+                                showLoader: true,
+                                data:{ rush : rushStatus,
+                                       productId : <?=$_product->getId()?>,
+                                       productPrice: <?=$_product->getPrice()?>,
+                                       optionPrice : dataFormula+'_'+optionPrice,
+                                       formula : priceFormula,
+                                       mesureType   : mesureType,
+                                       mesureWidth  : mesureWidth,
+                                       mesureHeight : mesureHeight,
+                                       selectedIdentifierA : A,
+                                       selectedIdentifierB : B,
+                                       selectedIdentifierC : C,
+                                       selectedIdentifierD : D,
+                                       selectedIdentifierE : E,
+                                       selectedIdentifierF : F,
+                                       selectedIdentifierG : G,
+                                       selectedIdentifierH : H,
+                                       selectedIdentifierI : I,
+                                       selectedIdentifierJ : J,
+                                       selectedIdentifierK : K,
+                                       selectedIdentifierL : L,
+                                       selectedIdentifierM : M,
+                                       selectedIdentifierN : N,
+                                       selectedIdentifierO : O,
+                                      },
+                                    complete: function(response) {  
+                                        result          = JSON.parse(JSON.stringify(response.responseJSON));
+                                        calculatedPrice = result.finalPrice;
+                                        identifierV      = result.identifier;
+    
+                                        if(identifierV=="A"){
+                                            $('#identifier-a').val(result.identifierA);
+                                        }
+                                        if(identifierV=="B"){
+                                            $('#identifier-b').val(result.identifierB);
+                                        }
+                                        if(identifierV=="C"){
+                                            $('#identifier-c').val(result.identifierC);
+                                        }
+                                        if(identifierV=="D"){
+                                            $('#identifier-d').val(result.identifierD);
+                                        }
+                                        if(identifierV=="E"){
+                                            $('#identifier-e').val(result.identifierE);
+                                        }
+                                        if(identifierV=="F"){
+                                            $('#identifier-f').val(result.identifierF);
+                                        }
+                                        if(identifierV=="G"){
+                                            $('#identifier-g').val(result.identifierG);
+                                        }
+                                        if(identifierV=="H"){
+                                            $('#identifier-h').val(result.identifierH);
+                                        }
+                                        if(identifierV=="I"){
+                                            $('#identifier-i').val(result.identifierI);
+                                        }
+                                        if(identifierV=="J"){
+                                            $('#identifier-j').val(result.identifierJ);
+                                        }
+                                        if(identifierV=="K"){
+                                            $('#identifier-k').val(result.identifierK);
+                                        }
+                                        if(identifierV=="L"){
+                                            $('#identifier-l').val(result.identifierL);
+                                        }
+                                        if(identifierV=="M"){
+                                            $('#identifier-m').val(result.identifierM);
+                                        }
+                                        if(identifierV=="N"){
+                                            $('#identifier-n').val(result.identifierN);
+                                        }
+                                        if(identifierV=="O"){
+                                            $('#identifier-o').val(result.identifierO);
+                                        }
+                                        $('.product-info-price .price-box').html(calculatedPrice);
+    
+                                        $('.options-calculated-price .price').html(calculatedPrice);
+    
+                                        $('#caculated_price').val(result.intPrice);
+    
+                                        console.log(result);
+                                    },
+                                    error: function (xhr, status, errorThrown) {
+                                        return;
+                                        console.log('Error->'+errorThrown);
+                                    }                            
+                            }); 
+                        }
+                    });
+                    
+    /*********************************calculate price for other Radio type options except measurement*********************************/
+    /********************disable by default spefified options and save input values into hidden fields*******************************/
+    
+                    $('#custom-mesure').parent().hide();
+                    $('.mesure-width').parent().parent().hide();
+                    $('.mesure-height').parent().parent().hide();
+                    $('.upload-artwork').parent().parent().hide();
+                    $('.calculate-price').hide();
+                    $('.mesure-enter-your-address').parent().parent().hide();
+    
+                    $('.extrawidth input').change(function() {
+                        extraWidth = $(this).val();
+                        measureWidth = $('.mesure-width').val();
+                        $('#measure_width').val(measureWidth+'.'+extraWidth);
+                    });
+                    $('.extraheight input').change(function() {
+                        extraHeight = $(this).val();
+                        measureHeight = $('.mesure-height').val();
+                        $('#measure_height').val(measureHeight+'.'+extraHeight);           
+                    });
+                    
+                    $('.mesure-width').change(function() {
+                            measureWidth = $(this).val();
+                            if($('.extrawidth').lenght){
+                                 extraWidth = $('.extrawidth input').val();
+                                $('#measure_width').val(measureWidth+'.'+extraWidth);
+                            }else{
+                                $('#measure_width').val(measureWidth);
+                            }
+                            
+                        });
+                        $('.mesure-height').change(function() {
+                            measureHeight = $(this).val();
+                            if($('.extraheight').lenght){
+                                extraHeight = $('.extraheight input').val();
+                                $('#measure_height').val(measureHeight+'.'+extraHeight);
+                                
+                            }else{
+                                $('#measure_height').val(measureHeight);
+                            }
+                        });
+                    
+    /***********************************************************************************************************************************/
+     /*****************************calculate price for Select type options onChange event*********************************************/
+                
+                 $('select.product-custom-option').change(function() {
+        
+                    var optionPrice     = $('option:selected', this).attr('price');
+                    var selectedOption  = $('option:selected', this).text();
+                    var printingOption  = $('.custom-price-radio:checked').attr('price');
+                    var dataFormula     = $(this).attr('data-formula');
+                   
+                    selectedOption = $.trim(selectedOption);
+                    if(selectedOption=="A0" || selectedOption=="A1" || selectedOption=="A2" || selectedOption=="A3" || selectedOption=="A4" || selectedOption=="A5"){
+                        $('#measure_width').val('');   
+                        $('#measure_height').val(''); 
+                        $('#measure_type').val('');
+                        $('.mesure-width').val('');   
+                        $('.mesure-height').val('');   
+                        $('#identifier-a').val(''); 
+                        $('#custom-mesure input').attr('checked',false);
+                        $('.extrawidth').remove();
+                        $('.extraheight').remove();
+                        
+                        if($('.mesure-width').siblings('span').length){
+                            $(".mesure-width").siblings('span').replaceWith('');
+                            $(".mesure-height").siblings('span').replaceWith('');
+                        }
+                    }
+                    var mesureWidth    = $("#measure_width").val();
+                    var mesureHeight   = $('#measure_height').val();
+                    var mesureType     = $("#measure_type").val();
+                    var rushStatus     = $('#ro').val();
+    
+                    if(rushStatus=="yes"){
+                        var rushStatus  =  "yes";
+                    }else{
+                        var rushStatus  =  "no";
+                    }
+                   
+                    
+                    if(optionPrice){
+                        //var A  = $('#identifier-a').val();
+                        if(dataFormula=="A"){
+                            var A = 16;
+                        }else{
+                            var A = $('#identifier-a').val();
+                        }
+                        if(dataFormula=="B"){
+                            var B = optionPrice;
+                        }else{
+                            var B = $('#identifier-b').val();
+                        }
+                        if(dataFormula=="C"){
+                            var C = optionPrice;
+                        }else{
+                            var C  = $('#identifier-c').val();
+                        }
+    
+                        if(dataFormula=="D"){
+                            var D = optionPrice;
+                        }else{
+                            var D  = $('#identifier-d').val();
+                        }
+    
+                        if(dataFormula=="E"){
+                            var E = optionPrice;
+                        }else{
+                            var E  = $('#identifier-e').val();
+                        }
+    
+                        if(dataFormula=="F"){
+                            var F = optionPrice;
+                        }else{
+                            var F  = $('#identifier-f').val();
+                        }
+    
+                        if(dataFormula=="G"){
+                        var G = optionPrice;
+                        }else{
+                            var G  = $('#identifier-g').val();
+                        }
+    
+                        if(dataFormula=="H"){
+                            var H = optionPrice;
+                        }else{
+                            var H  = $('#identifier-h').val();
+                        }
+    
+                        if(dataFormula=="I"){
+                            var I = optionPrice;
+                        }else{
+                            var I  = $('#identifier-i').val();
+                        }
+    
+                        if(dataFormula=="J"){
+                            var J = optionPrice;
+                        }else{
+                            var J  = $('#identifier-j').val();
+                        }
+    
+                        if(dataFormula=="K"){
+                            var K = optionPrice;
+                        }else{
+                            var K  = $('#identifier-k').val();
+                        }
+    
+                        if(dataFormula=="L"){
+                            var L = optionPrice;
+                        }else{
+                            var L  = $('#identifier-l').val();
+                        }
+    
+                        if(dataFormula=="M"){
+                            var M = optionPrice;
+                        }else{
+                            var M  = $('#identifier-m').val();
+                        }
+    
+                        if(dataFormula=="N"){
+                            var N = optionPrice;
+                        }else{
+                            var N  = $('#identifier-n').val();
+                        }
+    
+                        if(dataFormula=="O"){
+                            var O = optionPrice;
+                        }else{
+                            var O  = $('#identifier-o').val();
+                        }
+                        
+                        $.ajax({
+                                url: PostUrl,
+                                type: 'POST',
+                                dataType: 'json',
+                                showLoader: true,
+                                data:{ rush : rushStatus,
+                                       productId : <?=$_product->getId()?>,
+                                       productPrice: <?=$_product->getPrice()?>,
+                                       formula : priceFormula,
+                                       optionPrice : dataFormula+'_'+optionPrice,
+                                       mesureType   : mesureType,
+                                       mesureWidth  : mesureWidth,
+                                       mesureHeight : mesureHeight,
+                                       selectedIdentifierA : A,
+                                       selectedIdentifierB : B,
+                                       selectedIdentifierC : C,
+                                       selectedIdentifierD : D,
+                                       selectedIdentifierE : E,
+                                       selectedIdentifierF : F,
+                                       selectedIdentifierG : G,
+                                       selectedIdentifierH : H,
+                                       selectedIdentifierI : I,
+                                       selectedIdentifierJ : J,
+                                       selectedIdentifierK : K,
+                                       selectedIdentifierL : L,
+                                       selectedIdentifierM : M,
+                                       selectedIdentifierN : N,
+                                       selectedIdentifierO : O,
+                                      },
+                                    complete: function(response) {  
+                                        result          = JSON.parse(JSON.stringify(response.responseJSON));
+                                        calculatedPrice = result.finalPrice;
+                                        identifierV      = result.identifier;
+    
+                                        if(identifierV=="A"){
+                                            $('#identifier-a').val(result.identifierA);
+                                        }
+                                        if(identifierV=="B"){
+                                            $('#identifier-b').val(result.identifierB);
+                                        }
+                                        if(identifierV=="C"){
+                                            $('#identifier-c').val(result.identifierC);
+                                        }
+                                        if(identifierV=="D"){
+                                            $('#identifier-d').val(result.identifierD);
+                                        }
+                                        if(identifierV=="E"){
+                                            $('#identifier-e').val(result.identifierE);
+                                        }
+                                        if(identifierV=="F"){
+                                            $('#identifier-f').val(result.identifierF);
+                                        }
+                                        if(identifierV=="G"){
+                                            $('#identifier-g').val(result.identifierG);
+                                        }
+                                        if(identifierV=="H"){
+                                            $('#identifier-h').val(result.identifierH);
+                                        }
+                                        if(identifierV=="I"){
+                                            $('#identifier-i').val(result.identifierI);
+                                        }
+                                        if(identifierV=="J"){
+                                            $('#identifier-j').val(result.identifierJ);
+                                        }
+                                        if(identifierV=="K"){
+                                            $('#identifier-k').val(result.identifierK);
+                                        }
+                                        if(identifierV=="L"){
+                                            $('#identifier-l').val(result.identifierL);
+                                        }
+                                        if(identifierV=="M"){
+                                            $('#identifier-m').val(result.identifierM);
+                                        }
+                                        if(identifierV=="N"){
+                                            $('#identifier-n').val(result.identifierN);
+                                        }
+                                        if(identifierV=="O"){
+                                            $('#identifier-o').val(result.identifierO);
+                                        }
+                                        $('.product-info-price .price-box').html(calculatedPrice);
+    
+                                        $('.options-calculated-price .price').html(calculatedPrice);
+    
+                                        $('#caculated_price').val(result.intPrice);
+    
+                                    },
+                                    error: function (xhr, status, errorThrown) {
+                                        return;
+                                        console.log('Error->'+errorThrown);
+                                    }                             
+                            }); 
+                    }
+                    var customSize = $.trim($('.customize-size option:selected').text().toLowerCase());
+                    selectedOption = selectedOption.toLowerCase();
+                if(selectedOption=="customize size"){
+                    $('#custom-mesure').parent().show();
+                    $('.mesure-width').parent().parent().show();
+                    $('.mesure-height').parent().parent().show();
+                    $('.calculate-price').show();
+                    $('.mesure-width').val(1);
+                    $('.mesure-height').val(1);
+                    $('.ft').attr('checked',true);
+                    var measureValue = $.trim($('#custom-mesure input:checked').val());
+    
+                    if(measureValue=="undefined" || measureValue=="" || measureValue==null){
+                        $('.mesure-width').prop("disabled",true);
+                        $('.mesure-height').prop("disabled",true);
+                        $('.calculate-price').hide();                                
+                    }else{
+                        $('.mesure-width').prop("disabled",false);
+                        $('.mesure-height').prop("disabled",false); 
+                        $('.calculate-price').show();    
+                    }
+                }else{
+                    $('#custom-mesure').parent().hide();
+                    $('.mesure-width').parent().parent().hide();
+                    $('.mesure-height').parent().parent().hide(); 
+                    $('.mesure-width').prop("disabled",false);
+                    $('.mesure-height').prop("disabled",false); 
+                    $('.calculate-price').hide();
+    
+                }
+                if(customSize=="customize size"){
+                    $('#custom-mesure').parent().show();
+                    $('.mesure-width').parent().parent().show();
+                    $('.mesure-height').parent().parent().show();
+                    $('.calculate-price').show();
+    
+                    var measurelowercase = $.trim($('#custom-mesure input:checked').siblings('label').text().toLowerCase());
+                        if(measurelowercase=="ft"){
+                            if($('.extrawidth').length){
+                              return true;  
+                            }else{
+                                $(".mesure-width").parent('.control').after(inchWidth);
+                                $(".mesure-height").parent('.control').after(inchHeight); 
+                            }
+                            
+                            
+                            $('.mesure-width').attr("oninput","this.value = this.value.replace(/[^0-9]/g, '')");
+                            $('.mesure-height').attr("oninput","this.value = this.value.replace(/[^0-9]/g, '')");
+                            
+                            $(".extrawidth input").inputFilter(function(value) {
+                                return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 11); });
+                            
+                            $(".extraheight input").inputFilter(function(value) {
+                                return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 11); });
+                            
+                                $('.extrawidth input').change(function() {
+                                    extraWidth = $(this).val();
+                                    measureWidth = $('.mesure-width').val();
+                                    $('#measure_width').val(measureWidth+'.'+extraWidth);
+                                });
+                                $('.extraheight input').change(function() {
+                                    extraHeight = $(this).val();
+                                    measureHeight = $('.mesure-height').val();
+                                    $('#measure_height').val(measureHeight+'.'+extraHeight);           
+                                });
+                        }  
+    
+                    var measureValue = $.trim($('#custom-mesure input:checked').val());
+    
+                    if(measureValue=="undefined" || measureValue=="" || measureValue==null){
+                        $('.mesure-width').prop("disabled",true);
+                        $('.mesure-height').prop("disabled",true);
+                        $('.calculate-price').hide();      
+                    }else{
+                        $('.mesure-width').prop("disabled",false);
+                        $('.mesure-height').prop("disabled",false); 
+                        $('.calculate-price').show();    
+                    }
+                }else{
+                    $('#custom-mesure').parent().hide();
+                    $('.mesure-width').parent().parent().hide();
+                    $('.mesure-height').parent().parent().hide(); 
+                    $('.mesure-width').prop("disabled",false);
+                    $('.mesure-height').prop("disabled",false);  
+                    $('.calculate-price').hide();
+                }
+            });
+            
+    /***********************Display file upload option after selection spefified value*****************************************/
+    
+            $('.ready-artwork').on('change', function() {
+                selectedOption = $("option:selected", this).text();
+                selectedOption = $.trim(selectedOption.toLowerCase());
+    
+                if(selectedOption=="upload now"){
+                    $('.upload-artwork').parent().parent().show();               
+                }else{
+                    $('.upload-artwork').parent().parent().hide();
+                }
+            });
+            
+    /**************************************************************************************************************************/
+     /************************************************Calculat Units**********************************************************/
+    /**************************************************************************************************************************/
+            
+            $('#custom-mesure .options-list .product-custom-option').on('click', function() {
+                var measurement = $('#custom-mesure input:checked').siblings('label').html();
+                var measurelowercase = $.trim($('#custom-mesure input:checked').siblings('label').text().toLowerCase(measurement));
+    
+                var previous_val = "";
+                if(checked_val != null && checked_val != ""){
+                    previous_val = checked_val;
+                }else{
+                    previous_val = measurelowercase;
+                    checked_val = measurelowercase;
+                }
+                $('.mesure-width').prop("disabled",false);
+                $('.mesure-height').prop("disabled",false);
+                $('.calculate-price').show();
+                
+                    var savedWidth  = $('#measure_width').val();
+                    var savedHeight = $('#measure_height').val();
+                    
+                    if(savedWidth && savedHeight){
+                        var mesureWidth  = savedWidth;
+                        var mesuregeight = savedHeight;
+                    }else{
+                        var extraWidth   = $(".extrawidth input").val();
+                        var extraHeight  = $(".extrageight input").val();
+                        var mesureWidth  = $(".mesure-width").val();
+                        var mesuregeight = $(".mesure-height").val();
+                        if(extraWidth && extraHeight){
+                            mesureWidth = mesureWidth+'.'+extraWidth;
+                            mesuregeight = mesuregeight+'.'+extraHeight;
+                        }
+                    }
+    
+                    if(measurelowercase=="ft"){
+                            $(".mesure-width").parent('.control').after(inchWidth);
+                            $(".mesure-height").parent('.control').after(inchHeight); 
+                            
+                            $('.mesure-width').attr("oninput","this.value = this.value.replace(/[^0-9]/g, '')");
+                            $('.mesure-height').attr("oninput","this.value = this.value.replace(/[^0-9]/g, '')");
+                            
+                            $(".extrawidth input").inputFilter(function(value) {
+                                return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 11); });
+                            
+                            $(".extraheight input").inputFilter(function(value) {
+                                return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 11); });
+    
+                                $('.extrawidth input').change(function() {
+                                    extraWidth = $(this).val();
+                                    measureWidth = $('.mesure-width').val();
+                                    $('#measure_width').val(measureWidth+'.'+extraWidth);
+                                });
+                                $('.extraheight input').change(function() {
+                                    extraHeight = $(this).val();
+                                    measureHeight = $('.mesure-height').val();
+                                    $('#measure_height').val(measureHeight+'.'+extraHeight);           
+                                });  
+                    }else{
+                        $('.extrawidth').remove();
+                        $('.extraheight').remove();
+                        $('.mesure-width').attr("oninput","this.value = this.value.replace(/[^0-9.]/g, '')");
+                        $('.mesure-height').attr("oninput","this.value = this.value.replace(/[^0-9.]/g, '')");
+                        
+                        $('.mesure-width').change(function() {
+                            measureWidth = $(this).val();
+                            if($('.extrawidth').lenght){
+                                 extraWidth = $('.extrawidth input').val();
+                                $('#measure_width').val(measureWidth+'.'+extraWidth);
+                            }else{
+                                $('#measure_width').val(measureWidth);
+                            }
+                            
+                        });
+                        $('.mesure-height').change(function() {
+                            measureHeight = $(this).val();
+                            if($('.extraheight').lenght){
+                                extraHeight = $('.extraheight input').val();
+                                $('#measure_height').val(measureHeight+'.'+extraHeight);
+                                
+                            }else{
+                                $('#measure_height').val(measureHeight);
+                            }
+                        });
+                    }
+    
+                convert_measurement(measurelowercase,previous_val,mesuregeight,mesureWidth);
+    
+                if(measurelowercase=="ft"){
+                    ret_widthFlt  = $('.extrawidth input').val();
+                    ret_heightFlt = $('.extraheight input').val();
+    
+                    if(ret_widthFlt && ret_heightFlt){
+                        ret_width = ret_width.split('.');
+                        ret_height = ret_height.split('.');
+                        ret_widthInt = ret_width[0];
+                        ret_widthFlt = ret_width[1];                  
+                        ret_heightInt = ret_height[0];
+                        ret_heightFlt = ret_height[1];
+                    }else{
+                        if(ret_width % 1 === 0){
+                            ret_widthInt = ret_width;
+                            ret_widthFlt = ""; 
+                            } else{
+                                console.log("iffloat=> "+ret_width);
+                                ret_width = (ret_width.toFixed(2)).split('.');
+                                ret_widthInt = ret_width[0];
+                                ret_widthFlt = ret_width[1];                  
+                            }
+                        if(ret_width % 1 === 0){
+                            ret_heightInt = ret_height;
+                            ret_heightFlt = ""; 
+                            } else{
+                                ret_height = (ret_height.toFixed(2)).split('.');
+                                ret_heightInt = ret_height[0];
+                                ret_heightFlt = ret_height[1];               
+                            }
+                        if(ret_widthFlt==20 || ret_widthFlt==30 || ret_widthFlt==40 || ret_widthFlt==50 || ret_widthFlt==60 || ret_widthFlt==70 || ret_widthFlt==80 || ret_widthFlt==90){
+                            ret_widthFlt = parseInt(ret_widthFlt/10);
+                        }
+                        if(ret_heightFlt==20 || ret_heightFlt==30 || ret_heightFlt==40 || ret_heightFlt==50 || ret_heightFlt==60 || ret_heightFlt==70 || ret_heightFlt==80 || ret_heightFlt==90){
+                            ret_heightFlt = parseInt(ret_heightFlt/10);
+                        }
+                    } 
+                        
+                        $('.mesure-width').val(ret_widthInt);
+                        $('.mesure-height').val(ret_heightInt);
+                        $('.extrawidth input').val(ret_widthFlt);
+                        $('.extraheight input').val(ret_heightFlt);
+    
+    
+                        if(ret_widthFlt>0){
+                            ret_width = parseFloat(ret_widthInt+'.'+ret_widthFlt);
+                        }else{
+                            ret_width = parseInt(ret_widthInt);
+                        }
+                      
+                        if(ret_heightFlt>0){                      
+                            ret_height = parseFloat(ret_heightInt+'.'+ret_heightFlt); 
+                        }else{
+                            ret_height = parseInt(ret_heightInt);
+                        }                                        
+             
+                }else{
+                    $('.mesure-width').val(ret_width.toFixed(2));
+                    $('.mesure-height').val(ret_height.toFixed(2));
+                }   
+    
+                    $('#measure_width').val(ret_width.toFixed(5));
+                    $('#measure_height').val(ret_height.toFixed(5));
+                    
+                    checked_val = measurelowercase;
+                
+                if($('.mesure-width').siblings('span').length){
+                    $(".mesure-width").siblings('span').replaceWith(measurement);
+                    $(".mesure-height").siblings('span').replaceWith(measurement);
+                }else{
+                    $('.mesure-width').after(measurement);
+                    $('.mesure-height').after(measurement);
+                }
+    
+                finalArea  =  (ret_width)*(ret_height);
+                $('#measure_area').val(finalArea);
+                $('#measure_type').val(measurelowercase);
+            });
+    
+               $(".mesure-width").after(' <span> FT </span>');
+               $(".mesure-height").after(' <span> FT </span>'); 
+    
+               
+            var ret_height = $('.mesure-width').val();
+            var ret_width  = $('.mesure-height').val();
+            var checked_val = "ft";
+            function convert_measurement(current_type,prev_type,height,width){
+                if(prev_type == "meters"){
+                    if(current_type == "mm"){
+                        ret_width  = (width*1000);
+                        ret_height = (height*1000);  
+                    }if(current_type == "ft"){
+                        ret_width = (width*3.281);
+                        ret_height = (height*3.281);
+                    }if(current_type == "in"){
+                        ret_width = (width*39.37);
+                        ret_height = (height*39.37);
+                    }if(current_type == "cm"){
+                        ret_width = (width*100);
+                        ret_height = (height*100);    
+                    }
+                }
+                if(prev_type == "cm"){
+                    if(current_type == "mm"){
+                        ret_width = (width*10);
+                        ret_height = (height*10);  
+                    }if(current_type == "ft"){
+                        ret_width = (width/30.48);
+                        ret_height = (height/30.48);
+                    }if(current_type == "in"){
+                        ret_width = (width/2.54);
+                        ret_height = (height/2.54);
+                    }if(current_type == "meters"){
+                        ret_width = (width/100);
+                        ret_height = (height/100);
+                    }
+                }
+                if(prev_type == "mm"){
+                    if(current_type == "meters"){
+                        ret_width = (width/1000);
+                        ret_height = (height/1000);
+                    }if(current_type == "cm"){
+                        ret_width = (width/10);
+                        ret_height = (height/10);
+                    }if(current_type == "ft"){
+                        ret_width = (width/304.8);
+                        ret_height = (height/304.8);
+                    }if(current_type == "in"){
+                        ret_width = (width/25.4);
+                        ret_height = (height/25.4);
+                    }
+                }
+                if(prev_type == "ft"){
+                    if(current_type == "meters"){
+                        ret_width = (width/3.281);
+                        ret_height = (height/3.281);
+                    }if(current_type == "cm"){
+                        ret_width = (width*30.48);
+                        ret_height = (height*30.48);
+                    }if(current_type == "mm"){
+                        ret_width = (width*304.8);
+                        ret_height = (height*304.8);
+                    }if(current_type == "in"){
+                        ret_width = (width*12);
+                        ret_height = (height*12);
+                    }
+                }
+                if(prev_type == "in"){
+                    if(current_type == "meters"){
+                        ret_width = (width/39.37);
+                        ret_height = (height/39.37);
+                    }if(current_type == "cm"){
+                        ret_width = (width*2.54);
+                        ret_height = (height*2.54);
+                    }if(current_type == "mm"){
+                        ret_width = (width*25.4);
+                        ret_height = (height*25.4);
+                    }if(current_type == "ft"){
+                        ret_width = (width/12);
+                        ret_height = (height/12);
+                    }
+                }
+            }
+         });
+        });
+    </script>
+<?php endif;?>

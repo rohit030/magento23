@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Rohit Software
+ *
+ * @category Magento
+ * @package  Rc_ProductFileAttribute
+ * @author   Rohit Chauhan
+ * @license  license.html
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Rc_ProductFileAttribute" setup_version="1.0.0"></module>
+</config>

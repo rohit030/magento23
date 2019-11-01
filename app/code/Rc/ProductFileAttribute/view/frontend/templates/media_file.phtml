@@ -1,0 +1,17 @@
+<?php if($block->getProductMediaFile()):?>
+
+    <div class="downloads-links-block">
+        <div class="head">
+            <label class="label"><span><?=__('Product Downloads')?><span></label>
+        </div>
+                        
+        <div class="downloads-item">
+            <div class="item-icon"><img src="<?=$block->getViewFileUrl('Rc_ProductFileAttribute::images/zip-icon.png');?>" alt="zip-icon"></div>
+            <div class="item-link">       
+                <a href="<?=$block->getMediaFilePath()?>" rel="4" title="<?=$block->getMediaTitle()?>"><b><?=$block->getMediaTitle()?></b></a>           
+            </div>
+            <div class="item-info">(Size: <?=$block->getMediaSize()?>)</div>
+        </div>           
+    </div>
+
+<?php endif;?>

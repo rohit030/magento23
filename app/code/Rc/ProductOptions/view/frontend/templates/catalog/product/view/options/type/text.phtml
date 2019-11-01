@@ -1,0 +1,100 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /* @var $block \Magento\Catalog\Block\Product\View\Options\Type\Text */ ?>
+<?php
+    $_option = $block->getOption();
+    $class   = ($_option->getIsRequire()) ? ' required' : '';
+    $title   = trim(strtolower($block->escapeHtml($_option->getTitle())));
+    $customClass = 'mesure-'.str_replace(" ","-",$title);
+    $desc = $_option->getDescription();
+?>
+
+<div class="fildess field<?php if ($_option->getType() == \Magento\Catalog\Api\Data\ProductCustomOptionInterface::OPTION_TYPE_AREA) {
+    echo ' textarea';
+} ?><?= /* @escapeNotVerified */ $class ?>">
+    <label class="label" for="options_<?= /* @escapeNotVerified */ $_option->getId() ?>_text">
+        <span><?= $block->escapeHtml($_option->getTitle()) ?></span>
+        <?php if($desc):?>
+            <i class="fa fa-info-circle tooltip" aria-hidden="true">
+                <span class="tooltiptext"><?=$desc?></span>
+            </i>
+        <?php endif;?>
+    </label>
+    
+    <div class="control">
+        <?php if ($_option->getType() == \Magento\Catalog\Api\Data\ProductCustomOptionInterface::OPTION_TYPE_FIELD): ?>
+            <?php $_textValidate = null;
+            if ($_option->getIsRequire()) {
+                $_textValidate['required'] = true;
+            }
+            if ($_option->getMaxCharacters()) {
+                $_textValidate['maxlength'] = $_option->getMaxCharacters();
+            }
+            $_textValidate['validate-no-utf8mb4-characters'] = true;
+            ?>
+            <input type="text"
+                   id="options_<?= /* @escapeNotVerified */ $_option->getId() ?>_text"
+                   class="<?=$customClass;?> input-text product-custom-option"
+                   <?php if (!empty($_textValidate)) {?>
+                   data-validate="<?= $block->escapeHtml(json_encode($_textValidate)) ?>"
+                   <?php } ?> price="<?=$_option->getPrice();?>" data-formula="<?=$_option->getCustomClass()?>"
+                   name="options[<?= /* @escapeNotVerified */ $_option->getId() ?>]"
+                   data-selector="options[<?= /* @escapeNotVerified */ $_option->getId() ?>]"
+                   value="<?= $block->escapeHtml($block->getDefaultValue()) ?>" />
+
+        <?php elseif ($_option->getType() == \Magento\Catalog\Api\Data\ProductCustomOptionInterface::OPTION_TYPE_AREA): ?>
+            <?php $_textAreaValidate = null;
+            if ($_option->getIsRequire()) {
+                $_textAreaValidate['required'] = true;
+            }
+            if ($_option->getMaxCharacters()) {
+                $_textAreaValidate['maxlength'] = $_option->getMaxCharacters();
+            }
+            $_textAreaValidate['validate-no-utf8mb4-characters'] = true;
+            ?>
+            <textarea id="options_<?= /* @escapeNotVerified */ $_option->getId() ?>_text"
+                      class="<?=$customClass;?> product-custom-option"
+                    <?php if (!empty($_textAreaValidate)) {?>
+                        data-validate="<?= $block->escapeHtml(json_encode($_textAreaValidate)) ?>"
+                    <?php } ?>
+                      name="options[<?= /* @escapeNotVerified */ $_option->getId() ?>]"
+                      data-selector="options[<?= /* @escapeNotVerified */ $_option->getId() ?>]"
+                      rows="5"
+                      cols="25"><?= $block->escapeHtml($block->getDefaultValue()) ?></textarea>
+        <?php endif; ?>
+        <?php if ($_option->getMaxCharacters()): ?>
+            <p class="note note_<?= /* @escapeNotVerified */ $_option->getId() ?>">
+                <?= /* @escapeNotVerified */ __('Maximum %1 characters', $_option->getMaxCharacters()) ?>
+                <span class="character-counter no-display"></span>
+            </p>
+        <?php endif; ?>
+    </div>
+    
+    <?php if ($_option->getMaxCharacters()): ?>
+        <script type="text/x-magento-init">
+        {
+            "[data-selector='options[<?= /* @escapeNotVerified */ $_option->getId() ?>]']": {
+                "Magento_Catalog/js/product/remaining-characters": {
+                    "maxLength":  "<?= /* @escapeNotVerified */ $_option->getMaxCharacters() ?>",
+                    "noteSelector": ".note_<?= /* @escapeNotVerified */ $_option->getId() ?>",
+                    "counterSelector": ".note_<?= /* @escapeNotVerified */ $_option->getId() ?> .character-counter"
+                }
+            }
+        }
+    </script>
+    <?php endif; ?>
+    
+</div>
+   
+<?php if($customClass=="mesure-height"):?>
+        <div class="calculate-price">
+            <input class="calculate-custom-price" value="calculate" name="calculate" type="button" />
+        </div>
+    <?php endif;?>

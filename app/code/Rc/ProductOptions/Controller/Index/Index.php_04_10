@@ -1,0 +1,603 @@
+<?php
+	/**
+	 * Create Product Custom Options
+	 *
+	 * @category    Rohit Chauhan
+	 * @package     Rc_ProductOptions
+	 * @author      rohit.chauhan030@gmail.com
+	 *
+     */
+    
+    namespace Rc\ProductOptions\Controller\Index;
+
+    use Magento\Framework\App\Action\Action;
+    use Magento\Framework\App\Action\Context;
+    use Magento\Framework\View\Result\PageFactory;
+    use Magento\Catalog\Model\Product\Option;
+    use Magento\Catalog\Api\ProductRepositoryInterface;
+    use Magento\Framework\Controller\Result\JsonFactory; 
+    use Magento\Framework\Pricing\Helper\Data;
+
+	class Index extends Action
+	{   
+        protected $productOptions;
+        protected $productRepositoryInterface;
+        protected $_pageFactory;
+        protected $resultJsonFactory;
+        protected $_formatedPrice;
+
+        
+        const FIXED_VALUE = 16.00;
+        const MRT_TO_FT = 3.281;
+        const CM_TO_FT  = 30.48;
+        const MM_TO_FT  = 304.8;
+        const IN_TO_FT  = 12;
+
+        public function __construct(
+            Context $context,
+            PageFactory $pageFactory,
+            Option $productOptions,
+            ProductRepositoryInterface $productRepositoryInterface,
+            JsonFactory $resultJsonFactory,
+            Data $formatedPrice
+            ){
+            $this->productOptions = $productOptions;
+            $this->productRepositoryInterface = $productRepositoryInterface;
+            $this->resultJsonFactory = $resultJsonFactory;
+            $this->_formatedPrice = $formatedPrice;
+            
+            parent::__construct($context);
+        }
+        
+        function get_numeric($val) {
+              if (is_numeric($val)) {
+                return $val + 0;
+              }
+              return 0;
+            }
+		
+		public function execute()
+		{
+            $resultJson = $this->resultJsonFactory->create();
+            $response   = Null;
+            
+            $P           = $this->getRequest()->getPost('productPrice');
+            $formula  	 = $this->getRequest()->getPost('formula');	
+            $optionPrice = $this->getRequest()->getPost('optionPrice');	
+            $identifierA = $this->getRequest()->getPost('selectedIdentifierA');
+            $identifierB = $this->getRequest()->getPost('selectedIdentifierB');
+            $identifierC = $this->getRequest()->getPost('selectedIdentifierC');
+            $identifierD = $this->getRequest()->getPost('selectedIdentifierD');
+            $identifierE = $this->getRequest()->getPost('selectedIdentifierE');
+            $identifierF = $this->getRequest()->getPost('selectedIdentifierF');	
+            $identifierG = $this->getRequest()->getPost('selectedIdentifierG');
+            $identifierH = $this->getRequest()->getPost('selectedIdentifierH');
+            $identifierI = $this->getRequest()->getPost('selectedIdentifierI');
+            $identifierJ = $this->getRequest()->getPost('selectedIdentifierJ');
+            $identifierK = $this->getRequest()->getPost('selectedIdentifierK');
+            $identifierL = $this->getRequest()->getPost('selectedIdentifierL');
+            $identifierM = $this->getRequest()->getPost('selectedIdentifierM');
+            $identifierN = $this->getRequest()->getPost('selectedIdentifierN');
+            $identifierO = $this->getRequest()->getPost('selectedIdentifierO');
+
+            $mesureType   = $this->getRequest()->getPost('mesureType');
+            $mesureWidth  = $this->getRequest()->getPost('mesureWidth');
+            $mesureHeight = $this->getRequest()->getPost('mesureHeight');
+
+        if($mesureType && $mesureWidth && $mesureHeight):
+            $finalValue = 0;
+            if($mesureType=="meters"){
+               echo "width==> ".  $footWidth  = round(($mesureWidth*self::MRT_TO_FT),2); 
+               echo "height==>".  $footHeight = round(($mesureHeight*self::MRT_TO_FT),2);
+                
+                
+                
+                if(!is_float($this->get_numeric($footWidth))){
+                	  $footWidth = sprintf("%.2f", round($footWidth,2));
+                }
+                $splitedWidth = explode('.',$footWidth);
+                    if($splitedWidth[1]>0 && $splitedWidth[1]<=6 || ($splitedWidth[1]>12 && $splitedWidth[1]<=50)):
+                            $dotWidth = 0.5;
+                    elseif(($splitedWidth[1]>6 && $splitedWidth[1]<=12) || ($splitedWidth[1]>50)):
+                            $dotWidth = 1;
+                        else:
+                            $dotWidth = 0.00;
+                        endif;
+                        $finalWidth=$splitedWidth[0]+$dotWidth;
+                    
+                    if(!is_float($this->get_numeric($footHeight))){
+                	  $footHeight = sprintf("%.2f", round($footHeight,2));
+                    }
+                    
+                    $splitedHeight = explode('.',$footHeight);
+                    if(($splitedHeight[1]>0 && $splitedHeight[1]<=6) || ($splitedHeight[1]>12 && $splitedHeight[1]<=50)):
+                        $dotHeight = 0.5;
+                    elseif(($splitedHeight[1]>6 && $splitedHeight[1]<=12) || ($splitedHeight[1]>50)):
+                            $dotHeight = 1;
+                    else:
+                        $dotHeight = 0.0;
+                    endif;
+                    
+                $finalHeight=$splitedHeight[0]+$dotHeight;
+                $sqFoot =  $finalWidth*$finalHeight;
+                if($sqFoot>self::FIXED_VALUE)
+                {
+                   $finalValue = $sqFoot;
+                }else{
+                    $finalValue = self::FIXED_VALUE;
+                }
+            }
+            if($mesureType=="cm"){
+                $footWidth  = $mesureWidth/self::CM_TO_FT; 
+                $footHeight = $mesureHeight/self::CM_TO_FT;
+                if(!is_float($this->get_numeric($footWidth))){
+                	  $footWidth = sprintf("%.2f", round($footWidth,2));
+                }
+                $splitedWidth = explode('.',$footWidth);
+                    if($splitedWidth[1]>0 && $splitedWidth[1]<=6 || ($splitedWidth[1]>12 && $splitedWidth[1]<=50)):
+                            $dotWidth = 0.5;
+                    elseif(($splitedWidth[1]>6 && $splitedWidth[1]<=12) || ($splitedWidth[1]>50)):
+                            $dotWidth = 1;
+                        else:
+                            $dotWidth = 0.00;
+                        endif;
+                    $finalWidth=$splitedWidth[0]+$dotWidth;
+                    
+                    if(!is_float($this->get_numeric($footHeight))){
+                	  $footHeight = sprintf("%.2f", round($footHeight,2));
+                    }
+                    
+                    $splitedHeight = explode('.',$footHeight);
+                    if(($splitedHeight[1]>0 && $splitedHeight[1]<=6) || ($splitedHeight[1]>12 && $splitedHeight[1]<=50)):
+                        $dotHeight = 0.5;
+                    elseif(($splitedHeight[1]>6 && $splitedHeight[1]<=12) || ($splitedHeight[1]>50)):
+                            $dotHeight = 1;
+                    else:
+                        $dotHeight = 0.0;
+                    endif;
+                    
+                $finalHeight=$splitedHeight[0]+$dotHeight;
+                
+                $sqFoot =  $finalWidth*$finalHeight;
+
+                if($sqFoot>self::FIXED_VALUE)
+                {
+                   $finalValue = $sqFoot;
+                }else{
+                    $finalValue = self::FIXED_VALUE;
+                }
+            }
+
+            if($mesureType=="mm"){
+                $footWidth  = $mesureWidth/self::MM_TO_FT; 
+                $footHeight = $mesureHeight/self::MM_TO_FT;
+                if(!is_float($this->get_numeric($footWidth))){
+                	  $footWidth = sprintf("%.2f", round($footWidth,2));
+                }
+                $splitedWidth = explode('.',$footWidth);
+                    if($splitedWidth[1]>0 && $splitedWidth[1]<=6 || ($splitedWidth[1]>12 && $splitedWidth[1]<=50)):
+                            $dotWidth = 0.5;
+                    elseif(($splitedWidth[1]>6 && $splitedWidth[1]<=12) || ($splitedWidth[1]>50)):
+                            $dotWidth = 1;
+                        else:
+                            $dotWidth = 0.00;
+                        endif;
+                    $finalWidth=$splitedWidth[0]+$dotWidth;
+                    
+                    if(!is_float($this->get_numeric($footHeight))){
+                	  $footHeight = sprintf("%.2f", round($footHeight,2));
+                    }
+                    
+                    $splitedHeight = explode('.',$footHeight);
+                    if(($splitedHeight[1]>0 && $splitedHeight[1]<=6) || ($splitedHeight[1]>12 && $splitedHeight[1]<=50)):
+                        $dotHeight = 0.5;
+                    elseif(($splitedHeight[1]>6 && $splitedHeight[1]<=12) || ($splitedHeight[1]>50)):
+                            $dotHeight = 1;
+                    else:
+                        $dotHeight = 0.0;
+                    endif;
+                    $finalHeight=$splitedHeight[0]+$dotHeight;
+                
+                $sqFoot =  $finalWidth*$finalHeight;
+                if($sqFoot>self::FIXED_VALUE)
+                {
+                   $finalValue = $sqFoot;
+                }else{
+                    $finalValue = self::FIXED_VALUE;
+                }
+            }
+
+            if($mesureType=="in"){
+                $footWidth  = $mesureWidth/self::IN_TO_FT; 
+                $footHeight = $mesureHeight/self::IN_TO_FT;
+                if(!is_float($this->get_numeric($footWidth))){
+                	  $footWidth = sprintf("%.2f", round($footWidth,2));
+                }
+                $splitedWidth = explode('.',$footWidth);
+                    if($splitedWidth[1]>0 && $splitedWidth[1]<=6 || ($splitedWidth[1]>12 && $splitedWidth[1]<=50)):
+                            $dotWidth = 0.5;
+                    elseif(($splitedWidth[1]>6 && $splitedWidth[1]<=12) || ($splitedWidth[1]>50)):
+                            $dotWidth = 1;
+                        else:
+                            $dotWidth = 0.00;
+                        endif;
+                    $finalWidth=$splitedWidth[0]+$dotWidth;
+                    
+                    if(!is_float($this->get_numeric($footHeight))){
+                	  $footHeight = sprintf("%.2f", round($footHeight,2));
+                    }
+                    
+                    $splitedHeight = explode('.',$footHeight);
+                    if(($splitedHeight[1]>0 && $splitedHeight[1]<=6) || ($splitedHeight[1]>12 && $splitedHeight[1]<=50)):
+                        $dotHeight = 0.5;
+                    elseif(($splitedHeight[1]>6 && $splitedHeight[1]<=12) || ($splitedHeight[1]>50)):
+                            $dotHeight = 1;
+                    else:
+                        $dotHeight = 0.0;
+                    endif;
+                    
+                    $finalHeight=$splitedHeight[0]+$dotHeight;
+                
+                $sqFoot =  $finalWidth*$finalHeight;
+                if($sqFoot>self::FIXED_VALUE)
+                {
+                   $finalValue = $sqFoot;
+                }else{
+                    $finalValue = self::FIXED_VALUE;
+                }
+            }
+
+            if($mesureType=="ft"){
+                
+                    if(!is_float($this->get_numeric($mesureWidth))){
+                	    echo 'notfloat==>'.$mesureWidth = sprintf("%.2f", round($mesureWidth,2));
+                	}
+
+                    $splitedWidth = explode('.',$mesureWidth);
+ 
+                        if($splitedWidth[1]>0 && $splitedWidth[1]<=6 || ($splitedWidth[1]>12 && $splitedWidth[1]<=50)):
+                                $dotWidth = 0.5;
+                        elseif(($splitedWidth[1]>6 && $splitedWidth[1]<=12) || ($splitedWidth[1]>50)):
+                                $dotWidth = 1;
+                        else:
+                            $dotWidth = 0.0;
+                        endif;
+                        $finalWidth=$splitedWidth[0]+$dotWidth;
+                    
+                
+                   if(!is_float($this->get_numeric($mesureHeight))){
+                		$mesureHeight = sprintf("%.2f", round($mesureHeight,2));
+                	}
+                    $splitedHeight = explode('.',$mesureHeight);
+
+                    if(($splitedHeight[1]>0 && $splitedHeight[1]<=6) || ($splitedHeight[1]>12 && $splitedHeight[1]<=50)):
+                        $dotHeight = 0.5;
+                    elseif(($splitedHeight[1]>6 && $splitedHeight[1]<=12) || ($splitedHeight[1]>50)):
+                            $dotHeight = 1;
+                    else:
+                        $dotHeight = 0.0;
+                    endif;
+                   $finalHeight=$splitedHeight[0]+$dotHeight;
+                
+                $sqFoot =  $finalWidth*$finalHeight;
+                if($sqFoot>self::FIXED_VALUE)
+                {
+                   $finalValue = $sqFoot;
+                }else{
+                    $finalValue = self::FIXED_VALUE;
+                }
+            }
+        endif;
+
+            if($optionPrice):
+                $explode  = explode('_',$optionPrice);
+
+                if($identifierA):
+                    $A = $identifierA;
+                else:  
+                    if($explode[0]=="A"){
+                        $A = 16.00;
+                    }else{
+                        $A = 0;
+                    }
+                endif;
+
+                if($identifierB) :
+                    $B = $identifierB;
+                else:
+                    if($explode[0]=="B"){
+                        $B = $explode[1];
+                    }else{
+                        $B = 0; 
+                    }
+                endif;
+
+                if($identifierC):
+                    $C = $identifierC;
+                else:
+                    if($explode[0]=="C"){
+                        $C = $explode[1];
+                    }else{
+                        $C = 0;
+                    }
+                endif;
+
+                if($identifierD):
+                    $D = $identifierD;
+                else:
+                    if($explode[0]=="D"){
+                        $D = $explode[1];
+                    }else{
+                        $D = 0;  
+                    }
+                endif;
+
+                if($identifierE):
+                    $E = $identifierE;
+                else:
+                    if($explode[0]=="E"){
+                        $E = $explode[1];
+                    }else{
+                        $E = 0; 
+                    }
+                endif;
+                if($identifierF):
+                    $F = $identifierF;
+                else:
+                    if($explode[0]=="F"){
+                        $F = $explode[1];
+                    }else{
+                        $F = 0;
+                    }
+                endif;
+
+                if($identifierG):
+                    $G = $identifierG;
+                else:
+                    if($explode[0]=="G"){
+                        $G = $explode[1];
+                    }else{
+                        $G = 0;
+                    }
+                endif; 
+                
+                if($identifierH):
+                    $H = $identifierH;
+                else:
+                    if($explode[0]=="H"){
+                        $H = $explode[1];
+                    }else{
+                        $H = 0;
+                    }
+                endif;
+
+                if($identifierI):
+                    $I = $identifierI;
+                else:
+                    if($explode[0]=="I"){
+                        $I = $explode[1];
+                    }else{
+                        $I = 0;
+                    }
+                endif;
+                if($identifierJ):
+                    $J = $identifierJ;
+                else:
+                    if($explode[0]=="J"){
+                        $J = $explode[1];
+                    }else{
+                        $J = 0;
+                    }
+                endif;
+
+                if($identifierK):
+                    $K = $identifierK;
+                else:
+                    if($explode[0]=="K"){
+                        $K = $explode[1];
+                    }else{
+                        $K = 0;
+                    }
+                endif;
+
+                if($identifierL):
+                    $L = $identifierL;
+                else:
+                    if($explode[0]=="L"){
+                        $L = $explode[1];
+                    }else{
+                        $L = 0;
+                    }
+                endif;
+
+                if($identifierM):
+                    $M = $identifierM;
+                else:
+                    if($explode[0]=="M"){
+                        $M = $explode[1];
+                    }else{
+                        $M = 0;
+                    }
+                endif;
+
+                if($identifierN):
+                    $N = $identifierN;
+                else:
+                    if($explode[0]=="N"){
+                        $N = $explode[1];
+                    }else{
+                        $N = 0;
+                    }
+                endif;
+
+                if($identifierO):
+                    $O = $identifierO;
+                else:
+                    if($explode[0]=="O"){
+                        $O = $explode[1];
+                    }else{
+                        $O = 0;
+                    }
+                endif;
+
+                if($mesureType && $mesureWidth && $mesureHeight):
+                   /* if($finalValue>self::FIXED_VALUE):
+                        $roundedValue = sprintf("%.2f", round($finalValue,2));
+                        $splitedValue = explode('.',$roundedValue);
+                        if($splitedValue[1]<=50 && $splitedValue[1]>0):
+                            $dotValue = 0.50;
+                        elseif($splitedValue[1]>50):
+                            $dotValue = 1;
+                        else:
+                            $dotValue = 0.00;
+                        endif;
+                        $finalValue=$splitedValue[0]+$dotValue;
+                        $dedectedValue = $finalValue-self::FIXED_VALUE;
+                        /*if($B>0){
+                            $B += ($P*$dedectedValue);
+                        }
+                        if($C>0){
+                            $C += ($P*$dedectedValue);
+                        }
+                        if($D>0){
+                            $D += ($P*$dedectedValue);
+                        }
+                        if($E>0){
+                            $E += ($P*$dedectedValue);
+                        }
+                        if($F>0){
+                            $F += ($P*$dedectedValue);
+                        }
+                        if($G>0){
+                            $G += ($P*$dedectedValue);
+                        }
+                        if($H>0){
+                            $H += ($P*$dedectedValue);
+                        }
+                        if($I>0){
+                            $I += ($P*$dedectedValue);
+                        }
+                        if($J>0){
+                            $J += ($P*$dedectedValue);
+                        }
+                        if($K>0){
+                            $K += ($P*$dedectedValue);
+                        }
+                        if($L>0){
+                            $L += ($P*$dedectedValue);
+                        }
+                        if($M>0){
+                            $M += ($P*$dedectedValue);
+                        }
+                        if($N>0){
+                            $N += ($P*$dedectedValue);
+                        }
+                        if($O>0){
+                            $O += ($P*$dedectedValue);
+                        }
+                    endif;*/
+                        $A  = $finalValue;
+                endif;
+
+                try{
+                    $value = str_split($formula);
+                    $formulaValue = array();
+                    foreach($value as $_value) {
+                        switch($_value){
+                            case 'P':
+                                $formulaValue[]= $P;
+                                break;
+                            case 'A':
+                                $formulaValue[]= $A;
+                                break;
+                            case 'B':
+                                $formulaValue[]= $B;
+                                break;
+                            case 'C':
+                                $formulaValue[]= $C;
+                                break;
+                            case 'D':
+                                $formulaValue[]= $D;
+                                break;
+                            case 'E':
+                                $formulaValue[]= $E;
+                                break;
+                            case 'F':
+                                $formulaValue[]= $F;
+                                break;
+                            case 'G':
+                                $formulaValue[]= $G;
+                                break;
+                            case 'H':
+                                $formulaValue[]= $H;
+                                break;
+                            case 'I':
+                                $formulaValue[]= $I;
+                                break;
+                            case 'J':
+                                $formulaValue[]= $J;
+                                break;
+                            case 'K':
+                                $formulaValue[]= $K;
+                            case 'L':
+                                $formulaValue[]= $L;
+                                break;
+                            case 'M':
+                                $formulaValue[]= $M;
+                                break;
+                            case 'N':
+                                $formulaValue[]= $N;
+                                break;
+                            case 'O':
+                                $formulaValue[]= $O;
+                                break;
+                            default:
+                            $formulaValue[]= $_value;
+                        }
+                    }
+
+                    $string_version = implode('', $formulaValue);
+                    //print_r($string_version);
+                    //exit;
+                    $calculatedPrice = eval('return '.$string_version.';');
+                    //$calculatedPrice = 0;
+                    $finalPrice = $this->_formatedPrice->currency($calculatedPrice, true, false);
+
+                $response['status code']    =  '200';
+                $response['result']         =  'success';
+                $response['identifier']     =  $explode[0];
+                $response['identifierA']    =  $A;
+                $response['identifierB']    =  $B;
+                $response['identifierC']    =  $C;
+                $response['identifierD']    =  $D;
+                $response['identifierE']    =  $E;
+                $response['identifierF']    =  $F;
+                $response['identifierG']    =  $G;
+                $response['identifierH']    =  $H;
+                $response['identifierI']    =  $I;
+                $response['identifierJ']    =  $J;
+                $response['identifierK']    =  $L;
+                $response['identifierM']    =  $M;
+                $response['identifierN']    =  $N;
+                $response['identifierO']    =  $O;
+                $response['finalPrice']     =  $finalPrice;
+                $response['intPrice']       =  $calculatedPrice;
+
+            }catch(\Exception $e){
+                $response = array('result'=>'Failed','status code'=>500,'message'=>$e->getMessage());
+            }
+
+        endif;
+
+            if($response):
+                $resultJson->setData($response);
+                return $resultJson;
+            else:
+                $response = "empty response";
+                $resultJson->setData($response);
+                return $resultJson;
+             endif;
+
+        }
+
+	}

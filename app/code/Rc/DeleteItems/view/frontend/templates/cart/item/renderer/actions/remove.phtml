@@ -1,0 +1,50 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var $block \Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove */
+
+$_item = $block->getItem();
+$itemId = $_item->getId();
+?>
+<a href="javascript:void(0)"
+   title="<?= $block->escapeHtml(__('Remove item')) ?>"
+   class="action action-delete" id="item_<?php echo $itemId;?>">
+    <span>
+        <?= /* @escapeNotVerified */ __('Remove item') ?>
+    </span>
+</a>
+
+<script type="text/javascript">
+    require(['jquery'],function($) {  
+        $(document).ready(function(){
+            $('#item_<?=$itemId;?>').on('click',function() {
+                $.ajax({
+                    url: '<?=$block->getUrl('deleteitems/items/remove');?>',
+                    type: 'POST',
+                    showLoader: true,
+                    data : { item_id : <?=$itemId;?>, },
+                    success: function (res) {
+                        if (res.messages) {
+                            $('[data-placeholder="messages"]').html(res.messages);
+                        }
+
+                        if(res.itemcount>0){
+                            $('#row_<?=$itemId;?>').remove();
+                        }else{
+                            window.location.reload();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        console.log(err.Message);
+                    }
+                });
+            });
+        });
+    });
+</script>

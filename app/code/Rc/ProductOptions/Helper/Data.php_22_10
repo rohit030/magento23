@@ -1,0 +1,18 @@
+<?php
+
+namespace Rc\ProductOptions\Helper;
+
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
+{
+
+const SIDES_IMAGES = "single-sided.png,double-sided.png";
+
+const CUTTING_IMAGES = "square-cut-edges.png,radius-corners.png,custom-countour-cut.png";
+
+const LAMINATING_IMAGES = "no-lamination.png,matt-lamination.png,gloss-lamination.png,weather-shield.jpg,ant-graffiti-lamination.png,dry-wipe-lamination.png";
+
+const IMAGE_WIDTH = "70";
+
+const IMAGE_HEIGHT = "70";
+
+}

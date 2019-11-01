@@ -1,0 +1,18 @@
+{
+    "name": "rc/product-file-attribute",
+    "description": "Rohit Magento2 Product Custom File Type Attribute Extension",
+    "type":"magento2-module",
+    "require": {
+      "php": "~5.5.0|~5.6.0|~7.2.0"
+    },
+    "version": "1.0.0",
+    "license": [
+        "proprietary"
+    ],
+    "autoload": {
+      "files": [ "registration.php" ],
+      "psr-4": {
+        "rc\\ProductFileAttribute\\": ""
+      }
+    }
+  }
