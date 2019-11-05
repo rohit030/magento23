@@ -10,16 +10,4 @@ Run Following Command via terminal
 -----------------------------------
 php bin/magento setup:upgrade
 
-Install the module via composer
---------------------------
-Run the following commands in terminal-
-
-composer require rc/delete-items dev-master
-
-php bin/magento setup:upgrade
-
 now module is properly installed
-
-How to test the module
---------------------------
-Follow the blog link http://www.irohit.in/blog/remove-shopping-cart-items-by-ajax-component-in-magento-2
