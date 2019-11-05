@@ -1,4 +1,4 @@
-# Magento2 Rohit Shopping Cart Items Remove by ajax call using component Extension
+# Magento2 Shopping Cart Items Remove by ajax call using component Extension
 
 Delete cart items - allow to remove items without refreshing page.
 
